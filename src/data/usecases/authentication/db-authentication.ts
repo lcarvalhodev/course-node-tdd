@@ -6,12 +6,12 @@ import { LoadAccountByEmailRepository } from '../../protocols/db/load-account-by
 export class DbAuthentication implements Authentication {
   private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository
   private readonly hashComparer: HashComparer
-  private readonly tokenGeneratorStub: TokenGenerator
+  private readonly tokenGenerator: TokenGenerator
 
-  constructor (loadAccountByEmailRepository: LoadAccountByEmailRepository, hashComparer: HashComparer, tokenGeneratorStub: TokenGenerator) {
+  constructor (loadAccountByEmailRepository: LoadAccountByEmailRepository, hashComparer: HashComparer, tokenGenerator: TokenGenerator) {
     this.loadAccountByEmailRepository = loadAccountByEmailRepository
     this.hashComparer = hashComparer
-    this.tokenGeneratorStub = tokenGeneratorStub
+    this.tokenGenerator = tokenGenerator
   }
 
   async auth (authentication: AuthenticationModel): Promise<string> {
@@ -19,7 +19,7 @@ export class DbAuthentication implements Authentication {
     if (account) {
       const isValid = await this.hashComparer.compare(authentication.password, account.password)
       if (isValid) {
-        const accessToken = await this.tokenGeneratorStub.generate(account.id)
+        const accessToken = await this.tokenGenerator.generate(account.id)
         return accessToken
       }
     }
